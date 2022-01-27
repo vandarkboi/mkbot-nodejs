@@ -619,4 +619,18 @@ client.on('interactionCreate', async interaction => {
 });
 //endregion
 
+//region Help
+
+//region /github
+
+client.on('interactionCreate', async interaction > {
+    if (!checkCommand(interaction, 'github')) return;
+    await interaction.reply({content: 'Вам Сюда -> https://github.com/vandarkboi/mkbot-nodejs', ephemeral: true})
+})
+
+//endregion
+
+
+//endregion
+
 client.login(process.env.BOT_TOKEN);
