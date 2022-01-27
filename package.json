@@ -1,0 +1,23 @@
+{
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "@discordjs/builders": "^0.11.0",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "az": "^0.2.3",
+    "discord-api-types": "^0.25.2",
+    "discord.js": "^13.3.1",
+    "lokijs": "^1.5.12",
+    "mongodb": "^4.3.0",
+    "nedb": "^1.8.0",
+    "ow": "^0.28.1",
+    "package-lock.json": "^1.0.0",
+    "pnpm": "^6.24.1",
+    "yarn": "^1.22.17"
+  },
+  "engines": {
+    "node": "17.2.x",
+    "npm": "7.2.x"
+  }
+}
