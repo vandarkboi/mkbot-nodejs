@@ -623,7 +623,7 @@ client.on('interactionCreate', async interaction => {
 
 //region /github
 
-client.on('interactionCreate', async interaction > {
+client.on('interactionCreate', async interaction => {
     if (!checkCommand(interaction, 'github')) return;
     await interaction.reply({content: 'Вам Сюда -> https://github.com/vandarkboi/mkbot-nodejs', ephemeral: true})
 })
