@@ -612,6 +612,10 @@ client.on('interactionCreate', async interaction => {
     if (!checkCommand(interaction, 'assignroles')) return;
     await interaction.deferReply();
     const retMessage = await autoRoleAssignment(interaction.guild);
+    if (retMessage.length === 0) {
+        await interaction.editReply({content: "Все пользователи остались при своих ролях."});
+        return;
+    }
     const embed = new MessageEmbed()
         .setColor('#0099ff')
         .setTitle('Перераспределение Ролей')
