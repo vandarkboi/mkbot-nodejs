@@ -144,7 +144,9 @@ async function assignMafiaRole(guild, member, role){
     if (!member.roles.cache.has(role.id)){
         await removeMafiaRoles(guild, member);
         member.roles.add(role);
+        return true;
     };
+    return false;
 };
 
 /**
@@ -591,15 +593,16 @@ async function autoRoleAssignment(guild){
         const role = guild.roles.cache.find(Role => Role.name === roleNames[roleName]);
         const memberId = userIds.pop();
         const member = await guild.members.fetch(memberId[0].substring(2, 20));
-        await assignMafiaRole(guild, member, role)
-        assignedRoles += (`${memberId[0]} - **${memberId[1]}** - **${role.name}**\n`);
+        let reply = await assignMafiaRole(guild, member, role)
+        if (reply) assignedRoles += (`${memberId[0]} - **${memberId[1]}** - **${role.name}**\n`);
     }
 
     for (const memberId of userIds.reverse()){
         const role = guild.roles.cache.find(Role => Role.name === (memberId[1] > 12000 ? roleNames["soldier"] : roleNames["associate"]));
         const member = await guild.members.fetch(memberId[0].substring(2, 20));
         await assignMafiaRole(guild, member, role)
-        assignedRoles += (`${memberId[0]} - **${memberId[1]}** - **${role.name}**\n`);
+        let reply = await assignMafiaRole(guild, member, role)
+        if (reply) assignedRoles += (`${memberId[0]} - **${memberId[1]}** - **${role.name}**\n`);
     }
 
     return assignedRoles;
@@ -612,7 +615,7 @@ client.on('interactionCreate', async interaction => {
     const embed = new MessageEmbed()
         .setColor('#0099ff')
         .setTitle('Перераспределение Ролей')
-        .addFields({name: "Пользователи теперь имеют следующие роли:", value: retMessage});
+        .addFields({name: "Эти пользователи теперь имеют следующие роли:", value: retMessage});
 
     await interaction.editReply({embeds : [embed]});
 
