@@ -44,10 +44,13 @@ client.on('ready', async () => {
         }
     ];
     if (!client.application?.owner) await client.application?.fetch();
+    // console.log(await client.guilds.cache.get(guildId)?.commands.fetch())
     const command = await client.guilds.cache.get(guildId)?.commands.fetch('933412427507306506');
     await command.permissions.add({permissions});
     const command2 = await client.guilds.cache.get(guildId)?.commands.fetch('934784207438372874');
     await command2.permissions.add({permissions});
+    const command3 = await client.guilds.cache.get(guildId)?.commands.fetch('940303261519474758');
+    await command3.permissions.add({permissions});
 });
 //Read all command files
 for (const file of commandFiles) {
