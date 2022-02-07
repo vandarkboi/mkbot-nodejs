@@ -1,7 +1,15 @@
 debugger;
 
 //region Imports
-const {Client, Intents, MessageEmbed, MessageActionRow, MessageButton, MessageSelectMenu, Guild} = require('discord.js');
+const {
+    Client,
+    Intents,
+    MessageEmbed,
+    MessageActionRow,
+    MessageButton,
+    MessageSelectMenu,
+    Guild
+} = require('discord.js');
 const client = new Client({intents: [Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_WEBHOOKS, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_MESSAGE_TYPING, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, Intents.FLAGS.DIRECT_MESSAGE_TYPING, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
 const {REST} = require('@discordjs/rest');
 const {Routes} = require('discord-api-types/v9');
@@ -72,20 +80,25 @@ const rest = new REST({version: '9'}).setToken(process.env.BOT_TOKEN);
 
 //Working with MongoDB
 
-var addSocialCreditQuestion = async function({text, photo, incorrect_options, correct_options, points}){
+var addSocialCreditQuestion = async function ({text, photo, incorrect_options, correct_options, points}) {
     const mClient = new MongoClient(process.env.MONGODB_URL);
     await mClient.connect();
     const collection = (await mClient.db("bot_db").collection("social-credit-test"));
-    await collection.insertOne({"text": text, "photo": photo, "incorrect_options": incorrect_options, "correct_options": correct_options, "points": points});
+    await collection.insertOne({
+        "text": text,
+        "photo": photo,
+        "incorrect_options": incorrect_options,
+        "correct_options": correct_options,
+        "points": points
+    });
 };
 
-var getSocialCreditQuestions = async function(){
+var getSocialCreditQuestions = async function () {
     const mClient = new MongoClient(process.env.MONGODB_URL);
     await mClient.connect();
     const collection = (await mClient.db("bot_db").collection("social-credit-test"));
     return collection.find({}).toArray()
 };
-
 
 
 var editSocialCreditUser = async function (id, value) {
@@ -125,13 +138,16 @@ getSocialCreditUsers().then((data) => {
 });
 
 let creditTestQuestions = [];
-getSocialCreditQuestions().then(res => {creditTestQuestions = res; console.log('Questions Fetched.')});
+getSocialCreditQuestions().then(res => {
+    creditTestQuestions = res;
+    console.log('Questions Fetched.')
+});
 
 //endregion
 
 //region Functions for discord.js
 
-function checkCommand(interaction, commandName){
+function checkCommand(interaction, commandName) {
     return !(!interaction.isCommand() || interaction.commandName !== commandName);
 }
 
@@ -140,12 +156,13 @@ function checkCommand(interaction, commandName){
  * @param {member} member The member
  * @param {role} role Role
  */
-async function assignMafiaRole(guild, member, role){
-    if (!member.roles.cache.has(role.id)){
+async function assignMafiaRole(guild, member, role) {
+    if (!member.roles.cache.has(role.id)) {
         await removeMafiaRoles(guild, member);
         member.roles.add(role);
         return true;
-    };
+    }
+    ;
     return false;
 };
 
@@ -153,9 +170,9 @@ async function assignMafiaRole(guild, member, role){
  * @param {Guild} guild The guild
  * @param {member} member The member
  */
-async function removeMafiaRoles(guild, member){
+async function removeMafiaRoles(guild, member) {
     await guild.roles.fetch();
-    for (const roleName in roleNames){
+    for (const roleName in roleNames) {
         const role = guild.roles.cache.find(r => r.name === roleNames[roleName]);
         member.roles.remove(role);
     }
@@ -508,7 +525,6 @@ client.on('interactionCreate', async interaction => {
     if (!checkCommand(interaction, 'givecredit')) return;
 
 
-
     const member = interaction.options.getMember('member');
     const user = interaction.user;
     const amount = interaction.options.getInteger('amount');
@@ -579,17 +595,17 @@ const roleNames = {
     associate: 'Причастный'
 };
 
-async function autoRoleAssignment(guild){
+async function autoRoleAssignment(guild) {
     await guild.roles.fetch();
     let userIds = [];
-    for (var userId in social_credit_users){
+    for (var userId in social_credit_users) {
         userIds.push([userId, social_credit_users[userId]])
     }
     userIds.sort((a, b) => a[1] - b[1]);
 
     let assignedRoles = "";
 
-    for (const roleName of rolesQueue){
+    for (const roleName of rolesQueue) {
         const role = guild.roles.cache.find(Role => Role.name === roleNames[roleName]);
         const memberId = userIds.pop();
         const member = await guild.members.fetch(memberId[0].substring(2, 20));
@@ -597,7 +613,7 @@ async function autoRoleAssignment(guild){
         if (reply) assignedRoles += (`${memberId[0]} - **${memberId[1]}** - **${role.name}**\n`);
     }
 
-    for (const memberId of userIds.reverse()){
+    for (const memberId of userIds.reverse()) {
         const role = guild.roles.cache.find(Role => Role.name === (memberId[1] > 12000 ? roleNames["soldier"] : roleNames["associate"]));
         const member = await guild.members.fetch(memberId[0].substring(2, 20));
         await assignMafiaRole(guild, member, role)
@@ -621,7 +637,7 @@ client.on('interactionCreate', async interaction => {
         .setTitle('Перераспределение Ролей')
         .addFields({name: "Эти пользователи теперь имеют следующие роли:", value: retMessage});
 
-    await interaction.editReply({embeds : [embed]});
+    await interaction.editReply({embeds: [embed]});
 
 });
 //endregion
@@ -638,6 +654,40 @@ client.on('interactionCreate', async interaction => {
 //endregion
 
 
+//endregion
+
+//region /addquestion
+client.on('interactionCreate', async interaction => {
+    if (!checkCommand(interaction, 'addquestion')) return;
+
+    const text = interaction.options.getString('text');
+    const photo = interaction.options.getString('photo');
+    const incorrect_options = interaction.options.getString('incorrect_options').split('.');
+    const correct_options = interaction.options.getString('correct_options').split('.');
+    const points = interaction.options.getInteger('points');
+
+    if (points <= 0) {
+        await interaction.reply({
+            content: '**Ошибка: нельзя _не добавить_ очки социального рейтинга.**',
+            ephemeral: true
+        });
+        return;
+    }
+
+    if (incorrect_options.length < 1 ||
+        correct_options.length < 1) {
+        await interaction.reply({
+            content: '**Ошибка: отсутствуют правильные или неправильные варианты.**',
+            ephemeral: true
+        });
+        return;
+    }
+
+    await addSocialCreditQuestion({text: text, photo: photo, incorrect_options: incorrect_options, correct_options: correct_options, points: points});
+    await interaction.reply({content: '**Успешно**', ephemeral: true});
+
+
+});
 //endregion
 
 client.login(process.env.BOT_TOKEN);
