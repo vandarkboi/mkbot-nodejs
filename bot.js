@@ -586,7 +586,6 @@ const rolesQueue = [
     'underboss',
     'capo',
     'capo',
-    'capo',
     'capo'
 ];
 const roleNames = {
