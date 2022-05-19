@@ -589,12 +589,12 @@ const rolesQueue = [
     'capo'
 ];
 const roleNames = {
-    boss: 'Босс',
-    advisor: 'Консильери',
-    underboss: 'Подручный',
-    capo: 'Капо',
-    soldier: 'Солдат',
-    associate: 'Причастный'
+    boss: 'Консул',
+    advisor: 'Проконсул',
+    underboss: 'Трибун',
+    capo: 'Патриций',
+    soldier: 'Плебей',
+    associate: 'Раб'
 };
 
 async function autoRoleAssignment(guild) {
